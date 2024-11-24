@@ -2,7 +2,7 @@ import pytest
 import threading
 import time
 from pymodbus.client import ModbusTcpClient
-from plc_sim import context, run_modbus_server
+from src.sut_simulator.plc_sim import context, run_modbus_server
 
 
 # Fixture to start and stop the Modbus server
@@ -33,7 +33,6 @@ def reset_server_context():
 
 # Test reading and writing coils
 def test_coils(modbus_server):
-    time.sleep(5)
     client = ModbusTcpClient("127.0.0.1", port=5020)
     assert client.connect()
 
