@@ -172,3 +172,4 @@ out
 
 # Ignore compiled Python bytecode files
 *.pyc
+src/sut_simulator/__pycache__/

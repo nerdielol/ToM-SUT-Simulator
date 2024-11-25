@@ -2,7 +2,7 @@ import pytest
 import threading
 import time
 from pymodbus.client import ModbusTcpClient
-from src.sut_simulator.plc_sim import context, run_modbus_server
+from plc_sim import context, run_modbus_server
 
 
 # Fixture to start and stop the Modbus server
