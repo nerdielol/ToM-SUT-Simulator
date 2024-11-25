@@ -79,7 +79,9 @@ class SimulatedPLC:
         fault_indication = self.breaker.fault_status
         self.context[0x00].setValues(2, 1, [fault_indication])
 
-        # Update additional status indicators as needed
+        # I want to loop over the accessories dictionary and update the coils accordingly
+        for key, value in self.breaker.accessories.items():
+            self.context[0x00].setValues(1, 4, [key])
 
 
 if __name__ == '__main__':
