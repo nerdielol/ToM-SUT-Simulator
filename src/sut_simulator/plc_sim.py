@@ -35,8 +35,8 @@ def simulation_loop():
 
 class SimulatedPLC:
     def __init__(self, context, breaker):
-        self.context = context
-        self.breaker = breaker
+        self.context: ModbusServerContext = context
+        self.breaker: MTZBreaker = breaker
 
     def run(self):
         while True:
@@ -69,6 +69,10 @@ class SimulatedPLC:
             self.breaker.trip('Remote Trip')
             self.context[0x00].setValues(1, 2, [0])  # Reset the coil after processing
 
+        if coils[3]:
+            self.breaker.charge_mch()
+            self.context[0x00].setValues(1, 3, [0])
+
         # Process additional commands as needed
 
     def update_modbus_data(self):
@@ -79,7 +83,7 @@ class SimulatedPLC:
 
         breaker_status = 1 if self.breaker.status == 'Closed' else 0
         self.context[0x00].setValues(2, 0, [breaker_status])  # Function code 2 (Discrete Inputs)
-
+        
         fault_indication = self.breaker.fault_status
         self.context[0x00].setValues(2, 1, [fault_indication])
 

@@ -1,6 +1,6 @@
 class MTZBreaker:
     def __init__(self):
-        self.status = 'Closed'  # 'Closed' or 'Open'
+        self.status = 'Open'  # 'Closed' or 'Open'
         self.fault_status = 0   # 1 if faulted, 0 otherwise
         self.accessories = {}
         self.initialize_accessories()
@@ -14,6 +14,21 @@ class MTZBreaker:
         self.accessories['MX'] = 0  # MX (Shunt Trip Release): 1=Activated, 0=Inactive
         self.accessories['MN'] = 0  # MN (Undervoltage Release): 1=Voltage OK, 0=Undervoltage
         self.accessories['MCH'] = 0  # MCH (Motor Mechanism): 1=Ready, 0=Not Ready
+
+    def charge_mch(self):
+        """
+        Recharge MCH (Motor Mechanism) based on an input signal.
+        Update the status register to reflect readiness.
+        """
+        print("Recharging MCH (Motor Mechanism)...")
+        self.accessories['MCH'] = 1  # MCH is charged
+
+    def discharge_mch(self):
+        """
+        Discharge MCH (Motor Mechanism) and update the status register.
+        """
+        print("Discharging MCH (Motor Mechanism)...")
+        self.accessories['MCH'] = 0  # MCH is not charged
 
     def close(self):
         if self.status == 'Open' and self.accessories['MCH']:
@@ -85,11 +100,3 @@ class MTZBreaker:
             self.trip('Undervoltage')
         else:
             self.accessories['MN'] = 1
-
-    def recharge_mch(self):
-        print("Recharging MCH (Motor Mechanism)...")
-        self.accessories['MCH'] = 1  # MCH is ready
-
-    def discharge_mch(self):
-        print("Discharging MCH (Motor Mechanism)...")
-        self.accessories['MCH'] = 0  # MCH is not ready
