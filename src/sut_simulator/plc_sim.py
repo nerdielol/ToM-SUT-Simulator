@@ -81,7 +81,7 @@ class SimulatedPLC:
 
         # I want to loop over the accessories dictionary and update the coils accordingly
         for key, value in self.breaker.accessories.items():
-            self.context[0x00].setValues(1, 4, [key])
+            self.context[0x00].setValues(1, key, [value])
 
 
 if __name__ == '__main__':

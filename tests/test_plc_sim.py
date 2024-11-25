@@ -3,6 +3,10 @@ import threading
 import time
 from pymodbus.client import ModbusTcpClient
 from plc_sim import context, run_modbus_server
+from unittest.mock import Mock, patch
+from plc_sim import SimulatedPLC
+from mtz_sim import MTZBreaker
+from unittest.mock import Mock, call
 
 
 # Fixture to start and stop the Modbus server
@@ -29,6 +33,27 @@ def reset_server_context():
     context[0x00].setValues(3, 0, [0] * 100)
     # Reset input registers
     context[0x00].setValues(4, 0, [0] * 100)
+
+
+@pytest.fixture
+def mock_slave_context():
+    return Mock()
+
+@pytest.fixture
+def mock_context(mock_slave_context):
+    context = Mock()
+    # Properly configure the __getitem__ magic method
+    context.__getitem__ = Mock(return_value=mock_slave_context)
+    return context, mock_slave_context
+
+@pytest.fixture
+def breaker():
+    return MTZBreaker()
+
+@pytest.fixture
+def plc(mock_context, breaker):
+    context, _ = mock_context
+    return SimulatedPLC(context, breaker)
 
 
 # Test reading and writing coils
@@ -141,3 +166,51 @@ def test_concurrent_clients(modbus_server):
         thread.start()
     for thread in threads:
         thread.join()
+
+
+def test_update_modbus_breaker_closed(plc, breaker, mock_context):
+    _, slave_context = mock_context
+    
+    # Arrange
+    breaker.status = 'Closed'
+    
+    # Act
+    plc.update_modbus_data()
+    
+    # Assert
+    slave_context.setValues.assert_any_call(2, 0, [1])
+
+def test_update_modbus_breaker_open(plc, breaker, mock_context):
+    _, slave_context = mock_context
+    
+    breaker.status = 'Open'
+    plc.update_modbus_data()
+    slave_context.setValues.assert_any_call(2, 0, [0])
+
+def test_update_modbus_fault_status(plc, breaker, mock_context):
+    # Unpack the mock context tuple correctly
+    _, slave_context = mock_context
+    
+    # Arrange
+    breaker.fault_status = 1
+    
+    # Act
+    plc.update_modbus_data()
+    
+    # Assert
+    slave_context.setValues.assert_any_call(2, 1, [1])
+
+def test_update_modbus_accessories(plc, breaker, mock_context):
+    # Unpack the mock context tuple correctly
+    _, slave_context = mock_context
+    
+    # Arrange
+    test_accessories = {'OF': 1, 'XF': 0, 'SD': 1}
+    breaker.accessories = test_accessories
+    
+    # Act
+    plc.update_modbus_data()
+    
+    # Assert
+    for key, value in test_accessories.items():
+        slave_context.setValues.assert_any_call(1, key, [value])
