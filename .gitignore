@@ -169,3 +169,6 @@ Desktop.ini
 *.iws
 *.ipr
 out
+
+# Ignore compiled Python bytecode files
+*.pyc
