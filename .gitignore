@@ -173,3 +173,6 @@ out
 # Ignore compiled Python bytecode files
 *.pyc
 src/sut_simulator/__pycache__/
+src/sut_simulator/__pycache__/plc_sim.cpython-313.pyc
+src/sut_simulator/__pycache__/plc_sim.cpython-313.pyc
+tests/__pycache__/test_plc_sim.cpython-313-pytest-8.3.3.pyc
