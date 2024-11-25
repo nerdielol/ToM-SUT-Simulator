@@ -25,14 +25,6 @@ server_thread.daemon = True
 server_thread.start()
 
 
-# Simulate PLC or breaker logic here
-def simulation_loop():
-    while True:
-        # Example: Toggle a coil or update a register
-        # This is where your PLC or breaker simulation code will go
-        time.sleep(1)
-
-
 class SimulatedPLC:
     def __init__(self, context, breaker):
         self.context: ModbusServerContext = context
