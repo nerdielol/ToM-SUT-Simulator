@@ -85,9 +85,22 @@ class SimulatedPLC:
         # Update additional status indicators as needed
 
 
-# Start the simulation loop in the main thread
 if __name__ == '__main__':
+    # Instantiate the breaker simulation
+    breaker = MTZBreaker()
+
+    # Instantiate the PLC simulation with the breaker and Modbus context
+    plc_simulation = SimulatedPLC(context, breaker)
+
+    # Run the PLC simulation in a separate thread
+    plc_thread = Thread(target=plc_simulation.run)
+    plc_thread.daemon = True
+    plc_thread.start()
+
+    # Start the Modbus TCP server (already running in server_thread)
+    # The main thread can now handle other tasks or simply wait
     try:
-        simulation_loop()
+        while True:
+            time.sleep(1)
     except KeyboardInterrupt:
         print("Simulation stopped.")
