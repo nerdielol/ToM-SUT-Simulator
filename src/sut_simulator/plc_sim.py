@@ -1,6 +1,6 @@
 from pymodbus.server import StartTcpServer
 from pymodbus.datastore import ModbusSlaveContext, ModbusServerContext, ModbusSequentialDataBlock
-from mtz_sim import MTZBreaker
+from src.sut_simulator.mtz_sim import MTZBreaker
 from threading import Thread
 import time
 
